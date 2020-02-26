@@ -9,53 +9,61 @@ loadjs(
     "kaltura-ovp-player.js",
     "script.js"
   ],
-  "lib"
+  "kstory"
 );
 
 const loadLib = async function(options) {
-  const avialableStoriesResult = await fetch(
-    "http://ec2-3-121-201-181.eu-central-1.compute.amazonaws.com/playlists.php"
-  );
-  const avialableStories = await avialableStoriesResult.json();
-  const myStories = Object.values(avialableStories).map(user =>
-    Zuck.buildTimelineItem(
-      user.playlistId,
-      user.thumbnail,
-      user.user,
-      "",
-      timestamp(),
-      user.stories.map(entry => [
-        entry.id,
-        "kaltura",
-        0,
-        entry.id,
-        entry.thumbnailUrl + "/width/180/",
-        "",
-        false,
-        false,
-        timestamp()
-      ])
-    )
-  );
-
   const target = document.getElementById(options.target);
+  if (!(target instanceof HTMLDivElement)) {
+    console.error("provided target is not an HTMLDivElement");
+    return Promise.reject();
+  }
   target.classList.add("storiesWrapper");
+  try {
+    const avialableStoriesResult = await fetch(
+      "http://ec2-3-121-201-181.eu-central-1.compute.amazonaws.com/playlists.php"
+    );
+    const avialableStories = await avialableStoriesResult.json();
+    const myStories = Object.values(avialableStories).map(user =>
+      Zuck.buildTimelineItem(
+        user.playlistId,
+        user.thumbnail,
+        user.user,
+        "",
+        timestamp(),
+        user.stories.map(entry => [
+          entry.id,
+          "kaltura",
+          0,
+          entry.id,
+          entry.thumbnailUrl + "/width/180/",
+          "",
+          false,
+          false,
+          timestamp()
+        ])
+      )
+    );
 
-  var stories = new Zuck(options.target, {
-    backNative: true,
-    previousTap: true,
-    stories: myStories
-  });
+    var stories = new Zuck(options.target, {
+      backNative: true,
+      previousTap: true,
+      stories: myStories
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  }
+  return Promise.resolve();
 };
 
 //expose library endpoint
 let kstory = {
-    load: function(options) {
-      loadjs.ready("lib", {
-        success: () => loadLib(options),
-        error: e => {
-            console.error("failed to load kstory", e);
-        }
-      });
-    }
-  };
+  load: function(options) {
+    loadjs.ready("kstory", {
+      success: () => loadLib(options),
+      error: e => {
+        console.error("failed to load kstory", e);
+      }
+    });
+  }
+};
