@@ -224,13 +224,13 @@
       stories: [],
       backButton: true,
       backNative: false,
-      paginationArrows: false,
+      paginationArrows: true,
       previousTap: true,
       autoFullScreen: false,
       openEffect: true,
-      cubeEffect: false,
+      cubeEffect: true,
       list: false,
-      localStorage: true,
+      localStorage: false,
       callbacks: {
         onOpen: function onOpen(storyId, callback) {
           callback();
@@ -250,15 +250,40 @@
         }
       },
       template: {
+        timelineAddItem: function timelineAddItem(itemData) {
+          return `
+          <div class="story">
+            <a class="item-link" href="">
+              <div class="storyItemAdd storyItem">
+                <svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1">
+                    <g id="Widget" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g id="Widget---Min---1280" transform="translate(-115.000000, -203.000000)">
+                            <g id="rail_widget" transform="translate(40.000000, 48.000000)">
+                                <g id="Widget">
+                                    <g id="plus" transform="translate(67.000000, 147.000000)">
+                                        <rect id="Bounds" x="0" y="0" width="48" height="48"></rect>
+                                        <path d="M24,8 C25.1045695,8 26,8.88926172 26,10.0017433 L26,22 L37.9982567,22 C39.0535375,22 39.9180938,22.8088611 39.9945095,23.8497808 L40,24 C40,25.1045695 39.1107383,26 37.9982567,26 L26,26 L26,37.9982567 C26,39.0535375 25.1911389,39.9180938 24.1502192,39.9945095 L24,40 C22.8954305,40 22,39.1107383 22,37.9982567 L22,26 L10.0017433,26 C8.94646248,26 8.08190621,25.1911389 8.00549052,24.1502192 L8,24 C8,22.8954305 8.88926172,22 10.0017433,22 L22,21.999 L22,10.0017433 C22,8.94646248 22.8088611,8.08190621 23.8497808,8.00549052 L24,8 Z" id="Combined-Shape" fill="#60B0FF"></path>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+              </div>
+            
+            </a>
+          
+            <ul class="items"></ul>
+          </div>`;
+
+        },
         timelineItem: function timelineItem(itemData) {
           return `
           <div class="story ${get(itemData, 'seen') === true ? 'seen' : ''}">
             <a class="item-link" href="${get(itemData, 'link')}">
               <div class="storyItem">
                 <img lazy="eager" src="${
-                  (option('avatars') || !get(itemData, 'currentPreview'))
-                  ? get(itemData, 'photo')
-                  : get(itemData, 'currentPreview')
+                  get(itemData, 'currentPreview')
                 }" />
                 <div class="story_user_info">
                   <span class="story_user_name">
@@ -1344,6 +1369,12 @@
       each(option('stories'), function (i, item) {
         zuck.add(item, true);
       });
+
+      var storyItem = document.createElement('div');
+        storyItem.innerHTML = option('template', 'timelineAddItem')();
+        var story = storyItem.firstElementChild;
+        prepend(timeline, story);
+
       updateStorySeenPosition();
       var avatars = option('avatars') ? 'user-icon' : 'story-preview';
       var list = option('list') ? 'list' : 'carousel';
