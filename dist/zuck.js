@@ -251,19 +251,93 @@
       },
       template: {
         timelineItem: function timelineItem(itemData) {
-          return "\n            <div class=\"story ".concat(get(itemData, 'seen') === true ? 'seen' : '', "\">\n              <a class=\"item-link\" href=\"").concat(get(itemData, 'link'), "\">\n                <span class=\"item-preview\">\n                  <img lazy=\"eager\" src=\"").concat(option('avatars') || !get(itemData, 'currentPreview') ? get(itemData, 'photo') : get(itemData, 'currentPreview'), "\" />\n                </span>\n                <span class=\"info\" itemProp=\"author\" itemScope itemType=\"http://schema.org/Person\">\n                  <strong class=\"name\" itemProp=\"name\">").concat(get(itemData, 'name'), "</strong>\n                  <span class=\"time\">").concat(get(itemData, 'lastUpdatedAgo'), "</span>\n                </span>\n              </a>\n              \n              <ul class=\"items\"></ul>\n            </div>");
+          return `
+          <div class="story ${get(itemData, 'seen') === true ? 'seen' : ''}">
+            <a class="item-link" href="${get(itemData, 'link')}">
+              <div class="storyItem">
+                <img lazy="eager" src="${
+                  (option('avatars') || !get(itemData, 'currentPreview'))
+                  ? get(itemData, 'photo')
+                  : get(itemData, 'currentPreview')
+                }" />
+                <div class="story_user_info">
+                  <span class="story_user_name">
+                    ${get(itemData, 'name')}
+                  </span>
+                  <div class="story_user_avatar">
+                    <img lazy="eager" src="${
+                      (option('avatars') || !get(itemData, 'currentPreview'))
+                      ? get(itemData, 'photo')
+                      : get(itemData, 'currentPreview')
+                    }" />
+                  </div>
+                </div>
+              </div>
+            
+            </a>
+          
+            <ul class="items"></ul>
+          </div>`;
+
         },
         timelineStoryItem: function timelineStoryItem(itemData) {
           return "<a href=\"".concat(get(itemData, 'src'), "\"\n                      data-link=\"").concat(get(itemData, 'link'), "\"\n                      data-linkText=\"").concat(get(itemData, 'linkText'), "\"\n                      data-time=\"").concat(get(itemData, 'time'), "\"\n                      data-type=\"").concat(get(itemData, 'type'), "\"\n                      data-length=\"").concat(get(itemData, 'length'), "\">\n                    <img loading=\"auto\" src=\"").concat(get(itemData, 'preview'), "\" />\n                  </a>");
         },
-        viewerItem: function viewerItem(storyData, currentStoryItem) {
-          return "<div class=\"story-viewer\">\n                    <div class=\"head\">\n                      <div class=\"left\">\n                        ".concat(option('backButton') ? '<a class="back">&lsaquo;</a>' : '', "\n\n                        <span class=\"item-preview\">\n                          <img lazy=\"eager\" class=\"profilePhoto\" src=\"").concat(get(storyData, 'photo'), "\" />\n                        </span>\n\n                        <div class=\"info\">\n                          <strong class=\"name\">").concat(get(storyData, 'name'), "</strong>\n                          <span class=\"time\">").concat(get(storyData, 'timeAgo'), "</span>\n                        </div>\n                      </div>\n                      \n                      <div class=\"right\">\n                        <span class=\"time\">").concat(get(currentStoryItem, 'timeAgo'), "</span>\n                        <span class=\"loading\"></span>\n                        <a class=\"close\" tabIndex=\"2\">&times;</a>\n                      </div>\n                    </div>\n\n                    <div class=\"slides-pointers\">\n                      <div class=\"wrap\"></div>\n                    </div>\n\n                    ").concat(option('paginationArrows') ? "<div class=\"slides-pagination\">\n                          <span class=\"previous\">&lsaquo;</span>\n                          <span class=\"next\">&rsaquo;</span>\n                        </div>" : "", "\n                  </div>");
+        viewerItem (storyData, currentStoryItem) {
+          return `<div class="story-viewer">
+                    <div class="head">
+                      <div class="left">
+                        ${option('backButton') ? '<a class="back">&lsaquo;</a>' : ''}
+
+                        <span class="item-preview">
+                          <img lazy="eager" class="profilePhoto" src="${get(storyData, 'photo')}" />
+                        </span>
+
+                        <div class="info">
+                          <strong class="name">${get(storyData, 'name')}</strong>
+                          <span class="time">${get(storyData, 'timeAgo')}</span>
+                        </div>
+                      </div>
+                      
+                      <div class="right">
+                        <span class="time">${get(currentStoryItem, 'timeAgo')}</span>
+                        <span class="loading"></span>
+                        <a class="close" tabIndex="2">&times;</a>
+                      </div>
+                    </div>
+
+                    <div class="slides-pointers">
+                      <div class="wrap"></div>
+                    </div>
+
+                    ${
+                      option('paginationArrows')
+                      ? `<div class="slides-pagination">
+                          <span class="previous">&lsaquo;</span>
+                          <span class="next">&rsaquo;</span>
+                        </div>` 
+                      : ``
+                    }
+                  </div>`;
         },
         viewerItemPointer: function viewerItemPointer(index, currentIndex, item) {
           return "<span \n                    class=\"".concat(currentIndex === index ? 'active' : '', " ").concat(get(item, 'seen') === true ? 'seen' : '', "\"\n                    data-index=\"").concat(index, "\" data-item-id=\"").concat(get(item, 'id'), "\">\n                      <b style=\"animation-duration:").concat(get(item, 'length') === '' ? '3' : get(item, 'length'), "s\"></b>\n                  </span>");
         },
         viewerItemBody: function viewerItemBody(index, currentIndex, item) {
-          return "<div \n                    class=\"item ".concat(get(item, 'seen') === true ? 'seen' : '', " ").concat(currentIndex === index ? 'active' : '', "\"\n                    data-time=\"").concat(get(item, 'time'), "\" data-type=\"").concat(get(item, 'type'), "\" data-index=\"").concat(index, "\" data-item-id=\"").concat(get(item, 'id'), "\">\n                    ").concat(get(item, 'type') === 'video' ? "<video class=\"media\" muted webkit-playsinline playsinline preload=\"auto\" src=\"".concat(get(item, 'src'), "\" ").concat(get(item, 'type'), "></video>\n                        <b class=\"tip muted\">").concat(option('language', 'unmute'), "</b>") : "<img loading=\"auto\" class=\"media\" src=\"".concat(get(item, 'src'), "\" ").concat(get(item, 'type'), " />\n                    "), "\n\n                    ").concat(get(item, 'link') ? "<a class=\"tip link\" href=\"".concat(get(item, 'link'), "\" rel=\"noopener\" target=\"_blank\">\n                            ").concat(!get(item, 'linkText') || get(item, 'linkText') === '' ? option('language', 'visitLink') : get(item, 'linkText'), "\n                          </a>") : "", "\n                  </div>");
+          var media;
+          switch(get(item, 'type')) {
+            case 'video':
+              media = `<video class="media" muted webkit-playsinline playsinline preload="auto" src="${get(item, 'src')}" ${get(item, 'type')}></video>
+              <b class="tip muted">${option('language', 'unmute')}</b>` ;
+              break;
+            case 'photo':
+              media = `<img loading="auto" class="media" src="${get(item, 'src')}" ${get(item, 'type')} />`;
+              break;
+            case 'kaltura':
+              media = `<div id="${get(item, 'id')}" loading="auto" class="media" src="${get(item, 'src')}" ${get(item, 'type')} ></div>`;
+              break;
+          }    
+          return "<div \n                    class=\"item ".concat(get(item, 'seen') === true ? 'seen' : '', " ").concat(currentIndex === index ? 'active' : '', "\"\n                    data-time=\"").concat(get(item, 'time'), "\" data-type=\"").concat(get(item, 'type'), "\" data-index=\"").concat(index, "\" data-item-id=\"").concat(get(item, 'id'), "\">\n                    ").concat(media).concat(get(item, 'link') ? "<a class=\"tip link\" href=\"".concat(get(item, 'link'), "\" rel=\"noopener\" target=\"_blank\">\n                            ").concat(!get(item, 'linkText') || get(item, 'linkText') === '' ? option('language', 'visitLink') : get(item, 'linkText'), "\n                          </a>") : "", "\n                  </div>");
         }
       },
       language: {
@@ -451,10 +525,39 @@
           }
 
           pointerItems += option('template', 'viewerItemPointer')(i, currentItem, item);
+          item.id = 'vid_' + Math.floor(Math.random() * 1000);
           htmlItems += option('template', 'viewerItemBody')(i, currentItem, item);
+          if (item.type === 'kaltura') {
+            var tempPlayerPlaceholder = document.createElement("div");
+            tempPlayerPlaceholder.id = item.id + "_temp";
+            tempPlayerPlaceholder.style.display = "none";
+            document.body.appendChild(tempPlayerPlaceholder);
+            var player = KalturaPlayer.setup({
+              "logLevel": "DEBUG",
+              "targetId": tempPlayerPlaceholder.id,
+              sources: {
+                poster: ""
+              },
+              "ui": {
+                "disable": true
+              },
+              "provider": {
+                "partnerId": 1726172,
+                "uiConfId": 15215933
+              },
+              "playback": {
+                "preload": "auto",
+                "autoplay": false
+              },
+              "ui": {
+                "disable": true
+              }
+            });
+            player.loadMedia({entryId: item.src});
+          }
         });
         slides.innerHTML = htmlItems;
-        var video = slides.querySelector('video');
+        var videos = slides.querySelectorAll('video');
 
         var addMuted = function addMuted(video) {
           if (video.muted) {
@@ -464,29 +567,37 @@
           }
         };
 
-        if (video) {
-          video.onwaiting = function (e) {
+        var addEventListeners = video => {
+          video.addEventListener('waiting', function (e) {
             if (video.paused) {
               storyViewer.classList.add('paused');
               storyViewer.classList.add('loading');
             }
-          };
+          });
 
-          video.onplay = function () {
+          video.addEventListener('play', function () {
             addMuted(video);
             storyViewer.classList.remove('stopped');
             storyViewer.classList.remove('paused');
             storyViewer.classList.remove('loading');
-          };
+          });
 
-          video.onload = video.onplaying = video.oncanplay = function () {
+          var onload = function onload () {
             addMuted(video);
             storyViewer.classList.remove('loading');
           };
 
-          video.onvolumechange = function () {
+          ["load", "playing", "canplay"].forEach(event => {
+            video.addEventListener(event, onload);
+          })
+
+          video.addEventListener('volumechange', function () {
             addMuted(video);
-          };
+          });
+        }
+
+        if (videos.length > 0) {
+          videos.forEach(addEventListeners);
         }
 
         var storyViewerWrap = document.createElement('div');
@@ -517,6 +628,19 @@
           prepend(modalSlider, storyViewer);
         } else {
           modalSlider.appendChild(storyViewer);
+        }
+
+        for (var player in KalturaPlayer.getPlayers()){
+          var player = KalturaPlayer.getPlayers()[player];
+          addEventListeners(player);
+          var newId = player.config.targetId.match(/.*?(?=_temp|$)/i)[0];
+          var tempPlaceHolder = document.getElementById(player.config.targetId);
+          if (tempPlaceHolder) {
+            var newPlaceHolder = document.getElementById(newId);
+            newPlaceHolder.appendChild(tempPlaceHolder.firstElementChild);
+            // newPlaceHolder.style.display = "none";
+            tempPlaceHolder.parentNode.removeChild(tempPlaceHolder);
+          }
         }
       };
 
@@ -618,6 +742,8 @@
           var index = direction ? query('#zuck-modal .story-viewer.next') : query('#zuck-modal .story-viewer.previous');
           var isOutOfBounds = direction && !index || !direction && !index;
 
+          console.info(111111, {direction, index, isOutOfBounds})
+
           if (touchOffset && !touchOffset.valid) {
             return;
           } else {
@@ -661,8 +787,10 @@
               var navigateItem = function navigateItem() {
                 if (!direction) {
                   if (lastTouchOffset.x > window.screen.width / 3 || !option('previousTap')) {
+                    console.info(111111, "next")
                     zuck.navigateItem('next', event);
                   } else {
+                    console.info(111111, "previous")
                     zuck.navigateItem('previous', event);
                   }
                 }
@@ -674,9 +802,11 @@
                 if (storyViewerViewing.classList.contains('muted')) {
                   unmuteVideoItem(video, storyViewerViewing);
                 } else {
+                  console.info(111111, "navigateItem")
                   navigateItem();
                 }
               } else {
+                console.info(111111, "navigateItem")
                 navigateItem();
                 return false;
               }
@@ -734,7 +864,7 @@
             };
 
             if (option('openEffect')) {
-              var storyEl = query("#".concat(id, " [data-id=\"").concat(storyId, "\"] .item-preview"));
+              var storyEl = query("#".concat(id, " [data-id=\"").concat(storyId, "\"] .storyItem"));
               var pos = findPos(storyEl);
               modalContainer.style.marginLeft = "".concat(pos[0] + storyEl.offsetWidth / 2, "px");
               modalContainer.style.marginTop = "".concat(pos[1] + storyEl.offsetHeight / 2, "px");
@@ -863,7 +993,7 @@
 
         zuck.data[storyId].photo = story.getAttribute('data-photo'); // story preview (or user photo)
 
-        zuck.data[storyId].name = story.querySelector('.name').innerText;
+        zuck.data[storyId].name = story.querySelector('.story_user_name').innerText.trim();
         zuck.data[storyId].link = story.querySelector('.item-link').getAttribute('href');
         zuck.data[storyId].lastUpdated = story.getAttribute('data-last-updated');
         zuck.data[storyId].seen = seen;
@@ -958,6 +1088,30 @@
         if (unmute && unmute.target) {
           unmuteVideoItem(video, storyViewer);
         }
+      } else if (itemElement.getAttribute('data-type') === 'kaltura') {
+        var mplayerDiv = itemElement.firstElementChild;
+        itemElement.firstElementChild.style.width = "100%";
+        var video = KalturaPlayer.getPlayers()[mplayerDiv.id + "_temp"];
+        // video.loadMedia({entryId: mplayerDiv.getAttribute('src')});
+        if (!video) {
+          zuck.internalData['currentVideoElement'] = false;
+          return false;
+        }
+
+        var setDuration = function setDuration() {
+          if (video.duration) {
+            setVendorVariable(itemPointer.getElementsByTagName('b')[0].style, 'AnimationDuration', "".concat(video.duration, "s"));
+          }
+        };
+
+        setDuration();
+        video.addEventListener('loadedmetadata', setDuration);
+        zuck.internalData['currentVideoElement'] = video;
+        video.play();
+
+        if (unmute && unmute.target) {
+          unmuteVideoItem(video, storyViewer);
+        }
       } else {
         zuck.internalData['currentVideoElement'] = false;
       }
@@ -976,7 +1130,7 @@
     var unmuteVideoItem = function unmuteVideoItem(video, storyViewer) {
       video.muted = false;
       video.volume = 1.0;
-      video.removeAttribute('muted');
+      (video instanceof HTMLMediaElement) ? video.removeAttribute('muted') : video.getView().parentElement.parentElement.parentElement.removeAttribute('muted');
       video.play();
 
       if (video.paused) {

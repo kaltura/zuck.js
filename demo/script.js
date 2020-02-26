@@ -14,7 +14,7 @@ var changeSkin = function(skin) {
 };
 
 var getCurrentSkin = function() {
-  var header = document.getElementById('header');
+  // var header = document.getElementById('header');
   var skin = location.href.split('skin=')[1];
 
   if (!skin) {
@@ -67,8 +67,8 @@ var getCurrentSkin = function() {
     if (what) {
       el[i].setAttribute('selected', 'selected');
 
-      header.innerHTML = skin;
-      header.className = skin;
+      // header.innerHTML = skin;
+      // header.className = skin;
     } else {
       el[i].removeAttribute('selected');
     }

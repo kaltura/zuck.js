@@ -19,15 +19,6 @@
   </head>
 
   <body>
-    <h1 id="header">&nbsp;</h1>
-
-    <a href="https://ramon.codes/projects/zuck.js" target="_blank" class="disclaimer">
-      <img src="ICON.png" alt="zuck.js logo" />
-
-      <p>This a demonstration of <strong>zuck.js</strong> javascript library.</p>
-      <p>Not associated with Facebook, Instagram, WhatsApp or Snapchat.</p>
-    </a>
-
     <div id="stories" class="storiesWrapper"></div>
 
     <div class="skin">
@@ -41,10 +32,18 @@
       </select>
     </div>
 
-    <script src="dist/zuck.min.js"></script>
+    <script src="dist/zuck.js"></script>
+    <script src="kaltura-ovp-player.js"></script>
     <script src="demo/script.js"></script>
 
     <script>
+      (async function(){
+      const resultsJson = await fetch("http://ec2-3-121-201-181.eu-central-1.compute.amazonaws.com/list.php?ks=djJ8MTcyNjE3MnyNmKdbwP9_RE23-DM7iqReqZ_j_leSEldy1jnqDOFTCliNGx6ELbc2CCdr-ITCAnr_9HXhnjqJGgQ4V6j7upPIdOidc9lg8Pyd176RegFvbbLKdT_zQ4O3gh9BystOIHJbRpTNvGp4lNnHC0ARYS0Q&pid=1726172");
+      const results = await resultsJson.json();
+      const items = [];
+      results.forEach(entry => {
+        items.push([entry.id, "kaltura", 0, entry.id, entry.thumbnailUrl, '', false, false, timestamp()])
+      })
       var currentSkin = getCurrentSkin();
       var stories = new Zuck('stories', {
         backNative: true,
@@ -63,11 +62,7 @@
             "Ramon",
             "https://ramon.codes",
             timestamp(),
-            [
-              ["ramon-1", "photo", 3, "https://raw.githubusercontent.com/ramon82/assets/master/zuck.js/stories/1.jpg", "https://raw.githubusercontent.com/ramon82/assets/master/zuck.js/stories/1.jpg", '', false, false, timestamp()],
-              ["ramon-2", "video", 0, "https://raw.githubusercontent.com/ramon82/assets/master/zuck.js/stories/2.mp4", "https://raw.githubusercontent.com/ramon82/assets/master/zuck.js/stories/2.jpg", '', false, false, timestamp()],
-              ["ramon-3", "photo", 3, "https://raw.githubusercontent.com/ramon82/assets/master/zuck.js/stories/3.png", "https://raw.githubusercontent.com/ramon82/assets/master/zuck.js/stories/3.png", 'https://ramon.codes', 'Visit my Portfolio', false, timestamp()]
-            ]
+            items
           ),
           Zuck.buildTimelineItem(
             "gorillaz",
@@ -113,6 +108,7 @@
           )
         ]
       });
+    }());
     </script>
   </body>
 </html>
